@@ -1,7 +1,16 @@
 // ------------ Presets
 const presets = {
   'plus-grid': '768:0,1:1,3:0,1:1,3:0,1:1,40:0,3:1,1:0,3:1,1:0,3:1,40:0,1:1,3:0,1:1,3:0,1:1,91:0,1:1,3:0,1:1,3:0,1:1,40:0,3:1,1:0,3:1,1:0,3:1,40:0,1:1,3:0,1:1,3:0,1:1,91:0,1:1,3:0,1:1,3:0,1:1,40:0,3:1,1:0,3:1,1:0,3:1,40:0,1:1,3:0,1:1,3:0,1:1,1223:0,',
+  'stills': '153:0,2:1,4:0,2:1,5:0,2:1,35:0,2:1,3:0,1:1,2:0,1:1,3:0,1:1,2:0,1:1,3:0,2:1,5:0,1:1,29:0,2:1,5:0,1:1,1:0,1:1,3:0,1:1,1:0,1:1,3:0,1:1,1:0,1:1,36:0,1:1,5:0,1:1,5:0,1:1,2170:0,',
+  'gosper-glider-gun': '281:0,1:1,47:0,1:1,1:0,1:1,37:0,2:1,6:0,2:1,12:0,2:1,25:0,1:1,3:0,1:1,4:0,2:1,12:0,2:1,14:0,2:1,8:0,1:1,5:0,1:1,3:0,2:1,28:0,2:1,8:0,1:1,3:0,1:1,1:0,2:1,4:0,1:1,1:0,1:1,35:0,1:1,5:0,1:1,7:0,1:1,36:0,1:1,3:0,1:1,46:0,2:1,1829:0,',
 }
+const presetRules = {
+  'plus-grid': 'd&n',
+  'stills': 'conways',
+  'gosper-glider-gun': 'conways',
+}
+
+const rulesets = ['d&n', 'conways']
 
 // ------------ Utils
 function lerp(A, B, t) {
@@ -227,15 +236,38 @@ function randomizeGrid(){
 function updateCells(){
   const neighbours = getNumberOfNeighbours()
   for(let i = 0; i < grid.length; i++){
-    const n = neighbours[i]
-    if(grid[i] == 0){
-      if(n == 3 || n == 6 || n == 7 || n == 8){
-        grid[i] = 1
-      }
-    } else {
-      if(n == 0 || n == 1 || n == 2 || n == 5){
-        grid[i] = 0
-      }
+    switch(ruleset){
+      case 'conways':
+        {
+          const n = neighbours[i]
+          if(grid[i] == 0){
+            if(n == 3){
+              grid[i] = 1
+            }
+          } else {
+            if(n == 0 || n == 1 || n > 3){
+              grid[i] = 0
+            }
+          }
+        }
+        break
+      case 'd&n':
+        {
+          const n = neighbours[i]
+          if(grid[i] == 0){
+            if(n == 3 || n == 6 || n == 7 || n == 8){
+              grid[i] = 1
+            }
+          } else {
+            if(n == 0 || n == 1 || n == 2 || n == 5){
+              grid[i] = 0
+            }
+          }
+        }
+        break
+      default:
+        window.alert("Simulation failed. Ruleset does not exist")
+        location.reload()
     }
   }
 }
@@ -316,7 +348,8 @@ function loadPreset(preset){
     window.alert('Preset not found')
     return
   }
-  loadGrid(expand(presets['plus-grid']).map(e => parseInt(e)))
+  loadGrid(expand(presets[preset]).map(e => parseInt(e)))
+  ruleset = presetRules[preset]
 }
 
 function expand(s){
@@ -355,6 +388,36 @@ function compress(a){
   ret = ret.concat(`${currentQuant}:${currentVal},`)
   return ret
 }
+
+function loadPresetOptions(){
+  const s = document.getElementById('preset')
+  for(p in presets){
+    const o = document.createElement('option')
+    o.value = p
+    o.innerHTML = p
+    s.appendChild(o)
+  }
+}
+
+function loadRulesetOptions(){
+  const s = document.getElementById('ruleset')
+  for(let i = 0; i < rulesets.length; i++){
+    const p = rulesets[i]
+    const o = document.createElement('option')
+    o.value = p
+    o.innerHTML = p
+    s.appendChild(o)
+  }
+}
+
+function loadClick(){
+  loadPreset(document.getElementById('preset').value)
+  document.getElementById('ruleset').value = ruleset
+}
+
+function updateRuleset(){
+  ruleset = document.getElementById('ruleset').value
+}
 // -------------- Main
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
@@ -363,6 +426,8 @@ const gridWidth = 50
 const gridHeight = 50
 
 const timeStep = 100
+
+let ruleset = 'conways'
 
 let grid = new Array(gridWidth * gridHeight).fill(0)
 
@@ -380,6 +445,8 @@ let lastTime = 0
 let start = null
 
 initEventListeners()
+loadPresetOptions()
+loadRulesetOptions()
 setup()
 
 function simulate(realtime){
@@ -408,8 +475,8 @@ function simulate(realtime){
 function setup(){
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  drawGridLines()
   fillCells()
+  drawGridLines()
   fillHovered()
 
   if(state == 'setup'){

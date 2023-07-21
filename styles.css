@@ -6,4 +6,21 @@ canvas{
   width: 400px;
   height: 400px;
   background-color: #ddd;
+  margin: 10px;
+}
+select{
+  padding: 3px;
+  outline: none;
+  margin-left: 10px;
+  background-color: #ddd;
+  cursor: pointer;
+}
+button{
+  padding: 4px;
+  background-color: #ddd;
+  border: grey solid 1px;
+  cursor: pointer;
+}
+button:hover{
+  background-color: #bbb;
 }
