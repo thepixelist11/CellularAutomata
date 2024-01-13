@@ -51,70 +51,12 @@ function getIntersection(A, B, C, D) {
   return null;
 }
 
-function polysIntersection(poly1, poly2) {
-  for (let i = 0; i < poly1.length; i++) {
-    for (let j = 0; j < poly2.length; j++) {
-      const touch = getIntersection(poly1[i], poly1[(i + 1) % poly1.length], poly2[j], poly2[(j + 1) % poly2.length]);
-      if (touch) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-function getRGBA(value) {
-  const alpha = Math.abs(value);
-  const R = value < 0 ? 0 : 255;
-  const G = R;
-  const B = value > 0 ? 0 : 255;
-  return 'rgba(' + R + ',' + G + ',' + B + ',' + alpha + ')';
-}
-
-function swap(arr, firstIndex, secondIndex) {
-  var temp = arr[firstIndex];
-  arr[firstIndex] = arr[secondIndex];
-  arr[secondIndex] = temp;
-}
-function sort(arraytest) {
-  var len = arraytest.length,
-    i,
-    j,
-    stop;
-  for (i = 0; i < len; i++) {
-    for (j = 0, stop = len - i; j < stop; j++) {
-      if (arraytest[j] > arraytest[j + 1]) {
-        swap(arraytest, j, j + 1);
-      }
-    }
-  }
-  return arraytest;
-}
-
 class col {
   constructor(r, g, b, a = 255) {
     this.r = r;
     this.g = g;
     this.b = b;
     this.a = a;
-  }
-}
-class aARect{
-  constructor(x, y, width, height){
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
-    this.update()
-  }
-
-  update(){
-    this.points = [
-      [this.x, this.y],
-      [this.x + this.width, this.y],
-      [this.x + this.width, this.y + this.height],
-      [this.x, this.y + this.height],
-    ]
   }
 }
 
@@ -224,6 +166,7 @@ function getNumberOfNeighbours(){
   let nCount = []
   for(let i = 0; i < grid.length; i++){
     let val = 0
+    // FIXME: ._.
     if(grid[coords2index(index2coords(i, gridWidth).x + 0, index2coords(i, gridWidth).y + 1, gridWidth)] == 1 && !(index2coords(i, gridWidth).x + 0 < 0) && !(index2coords(i, gridWidth).x + 0 > gridWidth - 1) && !(index2coords(i, gridWidth).y + 1 < 0) && !(index2coords(i, gridWidth).y + 1 > gridHeight - 1)){val++}
     if(grid[coords2index(index2coords(i, gridWidth).x + 1, index2coords(i, gridWidth).y + 1, gridWidth)] == 1 && !(index2coords(i, gridWidth).x + 1 < 0) && !(index2coords(i, gridWidth).x + 1 > gridWidth - 1) && !(index2coords(i, gridWidth).y + 1 < 0) && !(index2coords(i, gridWidth).y + 1 > gridHeight - 1)){val++}
     if(grid[coords2index(index2coords(i, gridWidth).x + 1, index2coords(i, gridWidth).y + 0, gridWidth)] == 1 && !(index2coords(i, gridWidth).x + 1 < 0) && !(index2coords(i, gridWidth).x + 1 > gridWidth - 1) && !(index2coords(i, gridWidth).y + 0 < 0) && !(index2coords(i, gridWidth).y + 0 > gridHeight - 1)){val++}
